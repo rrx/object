@@ -620,7 +620,6 @@ fn print_hash<Elf: FileHeader>(
             p.field("ChainCount", hash.chain_count.get(endian));
         });
     }
-    /* TODO: add this in a test somewhere
     if let Ok(Some((hash_table, link))) = section.hash(endian, data) {
         if let Ok(symbols) = _sections.symbol_table_by_index(endian, data, link) {
             if let Ok(versions) = _sections.versions(endian, data) {
@@ -630,18 +629,20 @@ fn print_hash<Elf: FileHeader>(
                         continue;
                     }
                     let hash = hash(name);
-                    let version = versions.version(versions.version_index(endian, index));
-                    let (hash_index, hash_symbol) = hash_table
-                        .find(endian, name, hash, version, &symbols, &versions)
-                        .unwrap();
-                    let hash_name = symbols.symbol_name(endian, hash_symbol).unwrap();
-                    assert_eq!(name, hash_name);
-                    assert_eq!(index, hash_index);
+                    if let Some(vs) = versions.as_ref() {
+                        if let Ok(version) = vs.version(vs.version_index(endian, index)) {
+                            let (hash_index, hash_symbol) = hash_table
+                                .find(endian, name, hash, version, &symbols, &vs)
+                                .unwrap();
+                            let hash_name = symbols.symbol_name(endian, hash_symbol).unwrap();
+                            assert_eq!(name, hash_name);
+                            assert_eq!(index, hash_index);
+                        }
+                    }
                 }
             }
         }
     }
-    */
 }
 
 fn print_gnu_hash<Elf: FileHeader>(

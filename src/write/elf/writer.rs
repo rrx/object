@@ -1284,7 +1284,8 @@ impl<'a> Writer<'a> {
         });
     }
 
-    fn rel_size(&self, is_rela: bool) -> usize {
+    /// Size of relocation entry
+    pub fn rel_size(&self, is_rela: bool) -> usize {
         if self.is_64 {
             if is_rela {
                 mem::size_of::<elf::Rela64<Endianness>>()
